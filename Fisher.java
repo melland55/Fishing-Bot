@@ -10,7 +10,45 @@ import java.awt.event.KeyEvent;
  
 import javax.imageio.ImageIO;
 //testing commit
+
+
+
 class Fisher{
+
+
+    public static void sleep(int miliseconds){
+        try{
+            Thread.sleep(miliseconds);
+        }catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    public static BufferedImage getImage(Rectangle rectangle){
+        try{
+            Robot robot = new Robot();
+            BufferedImage bobberImage = robot.createScreenCapture(rectangle);
+            return bobberImage;
+        }catch (Exception e) {
+            System.out.println(e);
+            return null;
+        }
+    }
+
+    public static void tabOut(){
+        try{
+            Robot robot = new Robot();
+            robot.keyPress(KeyEvent.VK_ALT);
+            sleep(100);
+            robot.keyPress(KeyEvent.VK_TAB);
+            sleep(200);
+            robot.keyRelease(KeyEvent.VK_ALT);
+            robot.keyRelease(KeyEvent.VK_TAB);
+        }catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
     public static int[] getBobberLocation(BufferedImage image){
         int[] bobberLocation = new int[2];
         for(int i = 0; i < 1280; i += 4){
@@ -35,9 +73,8 @@ class Fisher{
         while(true){
             try {
                 Robot robot = new Robot();
-                Rectangle bobberRect = new Rectangle(bobber[0] - 10, bobber[1] - 10, 20, 20);
+                Rectangle bobberRect = new Rectangle(bobber[0], bobber[1], 20, 20);
                 BufferedImage bobberImage = robot.createScreenCapture(bobberRect);
-                //ImageIO.write(bobberImage, "jpg", new File("bobber.jpg"));
                 int blue = 0;
                 int red = 0;
                 int green = 0;
@@ -56,19 +93,19 @@ class Fisher{
                 if(Math.abs(prevGreyValue - grey) > 7 && prevGreyValue != 0){        
                     return;
                 }
-                System.out.println(grey + " : " + prevGreyValue + " : " + (prevGreyValue - grey));
+                //System.out.println(grey + " : " + prevGreyValue + " : " + (prevGreyValue - grey));
                 prevGreyValue = grey;
             } catch (AWTException ex) {
                 System.err.println(ex);
             }
-            try {
-                Thread.sleep(100);
-             } catch (Exception e) {
-                System.out.println(e);
-             }
+            sleep(100);
              countSec++;
-             System.out.println("Time Elapsed: " + (countSec / 10) + " seconds");
-             
+             if(countSec % 10 == 0){
+                System.out.println("Time Elapsed: " + (countSec / 10) + " seconds");
+             }
+             if(countSec / 10 > 20){
+                 return;
+             }
         }
     }
     public static void main(String[] args){
@@ -84,30 +121,16 @@ class Fisher{
             System.out.print("Found Lure at " + bobberLocation[0] + ", " + bobberLocation[1]);
             catchFish(bobberLocation);
             robot.mouseMove(bobberLocation[0], bobberLocation[1]);
-            try{
-                Thread.sleep(100);
-            }catch (Exception e) {
-                System.out.println(e);
-            }
+            sleep(1000);
             robot.mousePress(InputEvent.BUTTON1_MASK);
-            try{
-                Thread.sleep(100);
-            }catch (Exception e) {
-                System.out.println(e);
-            }
+            sleep(100);
             robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-            try{
-                Thread.sleep(400);
-            }catch (Exception e) {
-                System.out.println(e);
-            }
+            sleep(400);
             robot.mousePress(InputEvent.BUTTON3_MASK);
-            try{
-                Thread.sleep(100);
-            }catch (Exception e) {
-                System.out.println(e);
-            }
+            sleep(100);
             robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
+            sleep(2000);
+            tabOut();
         } catch (AWTException | IOException ex) {
             System.err.println(ex);
         }
