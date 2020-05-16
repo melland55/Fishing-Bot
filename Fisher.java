@@ -8,10 +8,19 @@ import java.io.IOException;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import javax.imageio.ImageIO;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.FlowLayout;
+import javax.swing.*;
+import javafx.scene.control.TextField;
+import java.awt.Dimension;
 
 
 class Fisher{
+    
+    //how long to run in minutes
+    static long timer = 0;
+
     public static void sleep(int miliseconds){
         try{
             Thread.sleep(miliseconds);
@@ -137,7 +146,7 @@ class Fisher{
                 int red = (pixel >> 16) & 0xff;
                 int green = (pixel >> 8) & 0xff;
                 int blue = (pixel) & 0xff;
-                if(red >= 60 && green <= 30 && blue <= 30){
+                if(red >= 50 && green <= 30 && blue <= 30){
                     bobberLocation[0] = i + 640;
                     bobberLocation[1] = j + 360;
                     return bobberLocation;
@@ -189,7 +198,10 @@ class Fisher{
              }
         }
     }
-    public static void main(String[] args){
+
+    public static void startFishing(){
+        long start = System.currentTimeMillis();
+        timer *= 60000;
         while(true){
             sleep(2000);
             castLine();
@@ -202,6 +214,47 @@ class Fisher{
             leftClick();
             rightClick();
             sleep(2000);
+            if(System.currentTimeMillis() - start > timer){
+                break;
+            }
         }
     }
+
+
+    static JButton button;
+
+    static JLabel timerLabel;
+    static JTextField timerTextField;
+    static JButton timerSave;
+    public static void main(String[] args){
+        JFrame frame = new JFrame("Fishing Bot");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(450,300);
+        frame.setLayout(new FlowLayout());
+        button = new JButton("Start Fishing");
+        button.setPreferredSize(new Dimension(150, 75));
+        timerSave = new JButton("Save Time");
+        timerLabel = new JLabel("Time to Fish in minutes");
+        frame.getContentPane().add(timerLabel);
+        timerTextField = new JTextField(10);
+        frame.getContentPane().add(timerTextField);
+        frame.getContentPane().add(timerSave);
+        frame.getContentPane().add(button);
+        frame.setVisible(true);
+        button.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                startFishing();
+                System.out.println("Done Fishing");
+            }
+        });
+        timerSave.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                timer = Integer.valueOf(timerTextField.getText());
+                System.out.println(timer);
+            }
+        });
+    }
 }
+
+
+
